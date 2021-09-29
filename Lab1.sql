@@ -5,19 +5,19 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema Slyvka
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema Slyvka
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `Slyvka` DEFAULT CHARACTER SET utf8 ;
+USE `Slyvka` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`tenant`
+-- Table `Slyvka`.`tenant`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`tenant` (
+CREATE TABLE IF NOT EXISTS `Slyvka`.`tenant` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `surname` VARCHAR(45) NOT NULL,
@@ -27,9 +27,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`landlord`
+-- Table `Slyvka`.`landlord`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`landlord` (
+CREATE TABLE IF NOT EXISTS `Slyvka`.`landlord` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `surname` VARCHAR(45) NOT NULL,
@@ -39,87 +39,120 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`apartment`
+-- Table `Slyvka`.`apartment`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`apartment` (
+CREATE TABLE IF NOT EXISTS `Slyvka`.`apartment` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `area` INT NOT NULL,
   `number_of_room` INT NOT NULL,
   `feedback` VARCHAR(500) NULL,
   `rating` DECIMAL(1,1) NULL,
-  `Landlord_id` INT NOT NULL,
-  PRIMARY KEY (`id`, `Landlord_id`),
-  INDEX `fk_Apartment_Landlord1_idx` (`Landlord_id` ASC) VISIBLE,
-  CONSTRAINT `fk_Apartment_Landlord1`
-    FOREIGN KEY (`Landlord_id`)
-    REFERENCES `mydb`.`landlord` (`id`)
+  `landlord_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `landlord_id`),
+  INDEX `fk_apartment_landlord1_idx` (`landlord_id` ASC) VISIBLE,
+  CONSTRAINT `fk_apartment_landlord1`
+    FOREIGN KEY (`landlord_id`)
+    REFERENCES `Slyvka`.`landlord` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`photo`
+-- Table `Slyvka`.`photo`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`photo` (
+CREATE TABLE IF NOT EXISTS `Slyvka`.`photo` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `Apartment_id` VARCHAR(45) NOT NULL,
   `link` VARCHAR(50) NULL,
-  INDEX `fk_Photo_Apartment_idx` (`Apartment_id` ASC) VISIBLE,
-  PRIMARY KEY (`id`, `Apartment_id`),
-  CONSTRAINT `fk_Photo_Apartment`
-    FOREIGN KEY (`Apartment_id`)
-    REFERENCES `mydb`.`apartment` (`id`)
+  `apartment_id` INT NOT NULL,
+  `apartment_landlord_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_photo_apartment1_idx` (`apartment_id` ASC, `apartment_landlord_id` ASC) VISIBLE,
+  CONSTRAINT `fk_photo_apartment1`
+    FOREIGN KEY (`apartment_id` , `apartment_landlord_id`)
+    REFERENCES `Slyvka`.`apartment` (`id` , `landlord_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`reservation`
+-- Table `Slyvka`.`reservation`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`reservation` (
+CREATE TABLE IF NOT EXISTS `Slyvka`.`reservation` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `beginning_date` DATE NULL,
   `ending_date` DATE NULL,
-  `Tenant_id` INT NOT NULL,
-  `Apartment_id` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`, `Tenant_id`, `Apartment_id`),
-  INDEX `fk_Reservation_Tenant1_idx` (`Tenant_id` ASC) VISIBLE,
-  INDEX `fk_Reservation_Apartment1_idx` (`Apartment_id` ASC) VISIBLE,
-  CONSTRAINT `fk_Reservation_Tenant1`
-    FOREIGN KEY (`Tenant_id`)
-    REFERENCES `mydb`.`tenant` (`id`)
+  `is_arranged` TINYINT(1) NULL,
+  `apartment_id` INT NOT NULL,
+  `tenant_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `apartment_id`, `tenant_id`),
+  INDEX `fk_reservation_apartment1_idx` (`apartment_id` ASC) VISIBLE,
+  INDEX `fk_reservation_tenant1_idx` (`tenant_id` ASC) VISIBLE,
+  CONSTRAINT `fk_reservation_apartment1`
+    FOREIGN KEY (`apartment_id`)
+    REFERENCES `Slyvka`.`apartment` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Reservation_Apartment1`
-    FOREIGN KEY (`Apartment_id`)
-    REFERENCES `mydb`.`apartment` (`id`)
+  CONSTRAINT `fk_reservation_tenant1`
+    FOREIGN KEY (`tenant_id`)
+    REFERENCES `Slyvka`.`tenant` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`money_transfer`
+-- Table `Slyvka`.`money_transfer`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`money_transfer` (
+CREATE TABLE IF NOT EXISTS `Slyvka`.`money_transfer` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `tenant_id` INT NOT NULL,
-  `landlord_id` INT NOT NULL,
   `time` DATETIME NOT NULL,
   `money` DECIMAL(9,2) NOT NULL,
-  PRIMARY KEY (`id`, `tenant_id`, `landlord_id`),
-  INDEX `fk_tenant_has_landlord_landlord1_idx` (`landlord_id` ASC) VISIBLE,
-  INDEX `fk_tenant_has_landlord_tenant1_idx` (`tenant_id` ASC) VISIBLE,
-  CONSTRAINT `fk_tenant_has_landlord_tenant1`
-    FOREIGN KEY (`tenant_id`)
-    REFERENCES `mydb`.`tenant` (`id`)
+  `is_sent` TINYINT(1) NULL,
+  `may_be_recieved` TINYINT(1) NULL,
+  `is_recieved` TINYINT(1) NULL,
+  `landlord_id` INT NOT NULL,
+  `tenant_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `landlord_id`, `tenant_id`),
+  INDEX `fk_money_transfer_landlord1_idx` (`landlord_id` ASC) VISIBLE,
+  INDEX `fk_money_transfer_tenant1_idx` (`tenant_id` ASC) VISIBLE,
+  CONSTRAINT `fk_money_transfer_landlord1`
+    FOREIGN KEY (`landlord_id`)
+    REFERENCES `Slyvka`.`landlord` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tenant_has_landlord_landlord1`
+  CONSTRAINT `fk_money_transfer_tenant1`
+    FOREIGN KEY (`tenant_id`)
+    REFERENCES `Slyvka`.`tenant` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Slyvka`.`money_transfer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Slyvka`.`money_transfer` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `time` DATETIME NOT NULL,
+  `money` DECIMAL(9,2) NOT NULL,
+  `is_sent` TINYINT(1) NULL,
+  `may_be_recieved` TINYINT(1) NULL,
+  `is_recieved` TINYINT(1) NULL,
+  `landlord_id` INT NOT NULL,
+  `tenant_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `landlord_id`, `tenant_id`),
+  INDEX `fk_money_transfer_landlord1_idx` (`landlord_id` ASC) VISIBLE,
+  INDEX `fk_money_transfer_tenant1_idx` (`tenant_id` ASC) VISIBLE,
+  CONSTRAINT `fk_money_transfer_landlord1`
     FOREIGN KEY (`landlord_id`)
-    REFERENCES `mydb`.`landlord` (`id`)
+    REFERENCES `Slyvka`.`landlord` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_money_transfer_tenant1`
+    FOREIGN KEY (`tenant_id`)
+    REFERENCES `Slyvka`.`tenant` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
