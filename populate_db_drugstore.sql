@@ -1,4 +1,8 @@
 INSERT INTO `Slyvka_db_lab7_variant66`.`Street` (`name`) VALUES ('Naukova');
+INSERT INTO `Slyvka_db_lab7_variant66`.`Street` (`name`) VALUES ('Poletaeva');
+INSERT INTO `Slyvka_db_lab7_variant66`.`Street` (`name`) VALUES ('Prospekt');
+INSERT INTO `Slyvka_db_lab7_variant66`.`Street` (`name`) VALUES ('Soborna');
+INSERT INTO `Slyvka_db_lab7_variant66`.`Street` (`name`) VALUES ('Zelena');
 
 
 INSERT INTO `Slyvka_db_lab7_variant66`.`Position` (`name`) VALUES ('Chief');
@@ -14,6 +18,7 @@ INSERT INTO `Slyvka_db_lab7_variant66`.`Heal_target` (`name`) VALUES ('Arm');
 INSERT INTO `Slyvka_db_lab7_variant66`.`Heal_target` (`name`) VALUES ('Muscle');
 
 INSERT INTO `Slyvka_db_lab7_variant66`.`Drug` (`name`, `ministry_code`, `only_be_recipt`, `narcotic`, `psychotropic`) VALUES ('Helper-104', '7890', '1', '1', '1');
+INSERT INTO `Slyvka_db_lab7_variant66`.`Drug` (`name`, `ministry_code`, `only_be_recipt`, `narcotic`, `psychotropic`) VALUES ('704', '7890', '1', '1', '1');
 
 
 INSERT INTO `Slyvka_db_lab7_variant66`.`Drugstore` (`name`, `building_nomber`, `web_url`, `open_time`, `close_time`, `working_on_saturday`, `working_on_sunday`, `Street_name`) VALUES ('Ranok', '12', 'www.ranok.com', '8:30:00', '23:30:00', '1', '1', 'Naukova');
